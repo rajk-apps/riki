@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% load static %}
+    <script src="{% static "riki/js/isotope.pkgd.min.js" %}"></script>
+    
+    
+    <link rel="stylesheet" href="{% static "riki/chosen/chosen.css" %}">
+    
+    <!--style type="text/css">
+    .nopadding {
+        padding: 0 !important;
+        margin: 0 !important;
+    }   
+    </style-->
+    
+    <link rel="stylesheet" href="{% static "riki/css/style.css" %}" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'riki:home' %}">Riki</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav w-100">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'riki:courses' %}">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'riki:projects' %}">Projects</a>
+          </li>
+          <!--li class="nav-item">
+            <a class="nav-link" href="{% url 'riki:profiles' %}">Profiles</a>
+          </li-->
+          <li class="nav-item dropdown ml-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ user.first_name }}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'riki:profile' user.id %}">My Profile</a>
+              <!--a class="dropdown-item" href="#">My Courses</a>
+              <a class="dropdown-item" href="#">My Projects</a-->
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    {% endblock %}
+
+    {% block page %}
+
+    {% endblock %}
+
+{% endblock %}
+
+{% block endbody %}
+    <script src="{% static "riki/chosen/chosen.jquery.js" %}"  type="text/javascript"></script>
+    <script type="text/javascript">
+        var config = {
+          '.chosen-select'           : {},
+          '.chosen-select-deselect'  : {allow_single_deselect:true},
+          '.chosen-select-no-single' : {disable_search_threshold:10},
+          '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+          '.chosen-select-width'     : {width:"95%"}
+        }
+        for (var selector in config) {
+          $(selector).chosen(config[selector]);
+        }
+    </script>
+{% endblock %}

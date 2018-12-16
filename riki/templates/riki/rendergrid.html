@@ -1,0 +1,69 @@
+<div class="container">
+    {%if typedict.filters %}
+    <div class="row">
+        <div clas="col-12">
+            <div class="grid-button-group filter-button-group">
+                <button data-filter="*" class="grid-button">Show All</button>
+                  {% for k,v in typedict.filters.items %}
+                      <button data-filter="{{ k }}" class="grid-button">{{ v }}</button>  
+                  {% endfor %}  
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if typedict.sorters %}
+    <div class="row">
+        <div clas="col-12">
+            <div class="grid-button-group sort-by-button-group">
+              <button data-sort-by="original-order" class="grid-button">Original Order</button>
+              {% for k,v in typedict.sorters.items %}
+                <button data-sort-by="{{ k }}" class="grid-button">{{ v.1 }}</button>
+              {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<hr>
+
+<div class="container-fluid">
+    <div class="grid">                    
+        {% for q in queryset %}
+            {% if typedict.kind == 'course' %}                
+                {% with course=q template_name="riki/course-griditem.html" %}
+                    {% include template_name %}
+                {% endwith %}
+            {% endif %}
+            {% if typedict.kind == 'project' %}                
+                {% with project=q template_name="riki/project-griditem.html" %}
+                    {% include template_name %}
+                {% endwith %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script type="text/javascript">
+
+var $grid = $('.grid').isotope({
+    itemSelector: ".grid-item", 
+    layoutMode: "fitRows",
+    percentPosition: true,
+      getSortData: {
+        {% for k,v in typedict.sorters.items %}
+            {{ k }}: '[{{ v.0 }}]',
+        {% endfor %}
+      }
+});
+
+$('.filter-button-group').on( 'click', 'button', function() {
+  var filterValue = $(this).attr('data-filter');
+  $grid.isotope({ filter: filterValue });
+});
+
+$('.sort-by-button-group').on( 'click', 'button', function() {
+  var sortByValue = $(this).attr('data-sort-by');
+  $grid.isotope({ sortBy: sortByValue });
+});
+</script>

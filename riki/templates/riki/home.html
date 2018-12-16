@@ -1,0 +1,56 @@
+{% extends 'riki/riki_base.html' %}
+
+
+{% block page %}
+<div id="wrapper">
+
+    <div class="container">
+    
+        <div class="page-header">
+        <h3>Hello!</h3>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-4">
+                <h4> Add new project </h4>
+            </div>
+            <div class="col-12">
+                <form class="form-horizontal" method="POST" action="">
+                {% csrf_token %}
+                {{ workform.as_ul }}
+                <div class="row spacer">
+                    <div class="col-2 offset-5">
+                        <button type="submit" class="btn btn-block btn-success">Create</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        {% if my_projects %}
+        <div class="row">
+            <div class="col-4">
+                <h4> My Projects </h4>
+            </div>
+            <div class="col-12">
+            {% with queryset=my_projects typedict=project_dict template_name="riki/rendergrid.html" %}
+                {% include template_name %}
+            {% endwith %}
+            </div>
+        </div>
+        {% endif %}
+        {% if my_courses %}
+        <div class="row">
+            <div class="col-4">
+                <h4> My Courses </h4>
+            </div>
+            <div class="col-12">
+            {% with queryset=my_courses typedict=course_dict template_name="riki/rendergrid.html" %}
+                {% include template_name %}
+            {% endwith %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

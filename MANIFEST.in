@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include rajksimple/static *
+recursive-include rajksimple/templates *

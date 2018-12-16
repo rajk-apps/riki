@@ -1,0 +1,74 @@
+{% extends 'riki/riki_base.html' %}
+{% block page %}
+<div id="wrapper">
+    <div class="container">
+        <div class="page-header">
+            <h3>Courses</h3>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-12">
+                <!--div class="switch-toggle switch-3 switch-candy">
+                    <input value=1 name="state-d" type="radio"  checked="checked">
+                    <label for=1 onclick="">Course list</label>
+
+                    <input value=2 name="state-d" type="radio">
+                    <label for=2 onclick="">Course applicants by course</label>
+
+                    <input value=3 name="state-d" type="radio">
+                    <label for=3 onclick="">Course applicants by student</label>
+                </div-->
+                <div id="tab1" style="display:inline">                
+                    {% with queryset=courses typedict=course_typedict template_name="riki/rendergrid.html" %}
+                        {% include template_name %}
+                    {% endwith %}
+                </div>
+                <!--div id="tab2" style="display:none">
+                    <table class="sortable table table-bordered table-striped table-hover">
+                    </table>
+                </div>
+                <div  id="tab3" style="display:none">                
+                    <table class="sortable table table-bordered table-striped table-hover">
+                    </table>
+                </div-->
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+{% block endbody %}
+    <!--script>
+        function showTab(state){
+          var tab1 = document.getElementById("tab1");
+          var tab2 = document.getElementById("tab2");
+          var tab3 = document.getElementById("tab3");
+          if(state==1){
+              tab1.style.display = 'inline'
+              tab2.style.display = 'none'
+              tab3.style.display = 'none'
+          }
+          if(state==2){
+              tab1.style.display = 'none'
+              tab2.style.display = 'inline'
+              tab3.style.display = 'none'
+          }
+          if(state==3){
+              tab1.style.display = 'none'
+              tab2.style.display = 'none'
+              tab3.style.display = 'inline'
+          } 
+        }
+        
+          $(function () {
+            $("input[name=state-d]").click(function () {
+              var state = $(this).val();
+              showTab(state)
+            });
+        });
+
+        var startState = $("input[name=state-d]").val();
+        showTab(startState)
+    </script-->
+{% endblock %}

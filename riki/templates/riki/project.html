@@ -1,0 +1,66 @@
+{% extends 'riki/riki_base.html' %}
+{% block page %}
+<div id="wrapper">
+    <div class="container">
+        <div class="page-header">
+            <h3>Project{% if edit %} <small>  -  <a href="{% url 'riki:project' project.id %}">back to view mode</a></small>{% endif %}</h3>
+        </div>
+        <hr>
+        {% if edit %}
+        <div class="row">
+            <div class="col-12">
+            <form class="form-horizontal" method="POST" action="">
+                {% csrf_token %}
+                {{form.as_ul}}
+                <div class="row spacer">
+                    <div class="col-3 offset-2">
+                        <button name="but" value="modify" type="submit" class="btn btn-block btn-primary">Modify</button>
+                    </div>
+                    <div class="col-3 offset-2">
+                        <button name="but" value="delete" type="submit" class="btn btn-block btn-danger">Delete</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-4">
+                <h4>Versions</h4>
+            </div>
+        </div>
+        {% for vform in formset %}
+        <div class="row">
+            <div class="col-12">
+                <form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                {{ vform.as_ul }}
+                <input type="hidden" name="version_id" value="{{ vform.initial.id }}" >
+                <div class="row spacer">
+                    {% if forloop.counter > 1 %}
+                    <div class="col-3 offset-2">
+                        <button name="but" value="modify" type="submit" class="btn btn-block btn-primary">Modify</button>
+                    </div>
+                    <div class="col-3 offset-2">
+                        <button name="but" value="delete" type="submit" class="btn btn-block btn-danger">Delete</button>
+                    </div>
+                    {% else %}
+                    <div class="col-2 offset-5">
+                        <button name="but" value="create" type="submit" class="btn btn-block btn-success">Create</button>
+                    </div>
+                    {% endif %}
+                </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+        {% else %}
+        {% with project=project template_name="riki/project-griditem.html" %}
+                    {% include template_name %}
+                {% endwith %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

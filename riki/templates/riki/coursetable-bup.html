@@ -1,0 +1,27 @@
+<div id="tab1" style="display:inline">
+<table class="sortable table table-bordered table-striped table-hover">
+    <tr>
+        <th>Semester</th>
+        <th>Name</th>
+        <th>Teaching</th>
+        <th>Min</th>
+        <th>Max</th>
+        <th>Language</th>
+        <th>Syallabus</th>
+        <th>Comment</th>
+    </tr>                    
+    {% for course in courses %}
+        <tr>
+            <td>{{ course.semester }}</td>
+            <td>{{ course.name }}</td>
+            <td>{% for teacher in course.teachers.all %}{% if forloop.counter > 1 %}, {% endif %}
+                <a href="{% url 'riki:profile' teacher.id %}">{{teacher.last_name}}</a>{% endfor %}
+            </td>
+            <td>{{ course.minapplicants }}</td>
+            <td>{{ course.maxapplicants }}</td>
+            <td>{{ course.language }}</td>
+            <td><a href="{{ course.syllabus }}">link</a></td>
+            <td>{{ course.comment }}</td>
+        </tr>
+    {% endfor %}
+</table>
