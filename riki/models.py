@@ -222,5 +222,5 @@ class Collaboration(models.Model):
     type = models.CharField(max_length=20,null=True,blank=True,
                             choices=COLL_CHOICE,default='author')
     
-    class Meta:
-        auto_created = True
+    #class Meta:
+    #    auto_created = True
