@@ -156,7 +156,7 @@ class Work(models.Model):
     abstract = models.TextField()
     
     courses = models.ManyToManyField(Course)
-    collaborators = models.ManyToManyField(User)#,through='Collaboration')
+    collaborators = models.ManyToManyField(User,through='Collaboration')
     attribute = models.ManyToManyField('AttributeTag')
     
     def __str__(self):
@@ -210,7 +210,7 @@ class AttributeTag(models.Model):
     def __str__(self):
         return self.name
 
-'''class Collaboration(models.Model):
+class Collaboration(models.Model):
     
     COLL_CHOICE = [('author','Author'),
                    ('reviewer','Reviewer'),
@@ -223,4 +223,4 @@ class AttributeTag(models.Model):
                             choices=COLL_CHOICE,default='author')
     
     class Meta:
-        auto_created = True'''
+        auto_created = True
