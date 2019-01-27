@@ -1,21 +1,30 @@
-<div class="grid-item col-12 p-4 {% for tag in course.get_filtertags %}{{ tag }} {% endfor %}"
-            {% for k,v in course.get_sortdict.items %} {{k}}="{{v}}" {% endfor %}>
+<div class="grid-item col-12 p-4 {% for tag in element.get_filtertags %}{{ tag }} {% endfor %}"
+            {% for k,v in element.get_sortdict.items %} {{k}}="{{v}}" {% endfor %}>
         <div class="card">
             <div class ="card-header">
-                <b>{{ course.name }}</b> ({{course.language}}) - {{ course.year }} / {{course.year|add:"1" }} - {{ course.semester }}
+                <b>{{ element.name }}</b> ({{element.language}}) - {{ element.year }} / {{element.year|add:"1" }} - {{ element.semester }}
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-2">{% for teacher in course.teachers.all %}{% if forloop.counter > 1 %}, {% endif %}
+                    <div class="col-2">{% for teacher in element.teachers.all %}{% if forloop.counter > 1 %}, {% endif %}
                         <a href="{% url 'riki:profile' teacher.id %}">{{teacher.last_name}}</a>{% endfor %}
                     </div>
-                    <div class="col-2">{{ course.minapplicants }} - {{ course.maxapplicants }}</div>
-                    <div class="col-2"><a href="{{ course.syllabus }}">syllabus</a></div>
-                    <div class="col-1">{{ course.comment }}</div>
+                    <div class="col-2">{{ element.minapplicants }} - {{ element.maxapplicants }}</div>
+                    <div class="col-2"><a href="{{ element.syllabus }}">syllabus</a></div>
+                    <div class="col-2">{{ element.comment }}</div>
+                    <div class="col-2">
+                        {% if element.semesterconfig_set.exists %}
+                        <form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
+                            <button name="apply_button" value="{{element.id}}" type="submit" class="btn btn-block btn-{% if element.am_attending %}danger{% else %}success{% endif %}">
+                            {% if element.am_attending %}Drop{% else %}Apply{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="card-footer">
-                {% for member in course.current_members %}{% if forloop.counter > 1 %}, {% endif %} <a href="{% url 'riki:profile' user.id %}">{{member.user.first_name}} {{member.user.last_name}}</a>{{member.plus}}{% endfor %}
+                {% for member in element.current_members %}{% if forloop.counter > 1 %}, {% endif %} <a href="{% url 'riki:profile' user.id %}" title="{{member.plus_info}}">{{member.user.first_name}} {{member.user.last_name}}</a>{% endfor %}
             </div>
         </div>
 </div>

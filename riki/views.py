@@ -1,14 +1,10 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
-from django.forms import ModelForm
 import time
 
 from .models import *
-from django.forms.formsets import formset_factory
-from django.forms import modelformset_factory
-from django import forms
+from .forms import *
 from django.http.response import HttpResponse
-
 
 @login_required
 def home(request):
@@ -32,41 +28,99 @@ def home(request):
     return render(request, 'riki/home.html',{'user':request.user,
                                              'my_courses':my_courses,
                                              'my_projects':my_projects,
-                                             'course_dict':{'kind':'course'},
-                                             'project_dict':{'kind':'project'},
+                                             'course_dict':{'griditem_template':'riki/course-griditem.html'},
+                                             'project_dict':{'griditem_template':'riki/project-griditem.html'},
                                              'workform':workform,
                                              })
 
 @login_required
 def courses(request):
-    courses = Course.objects.get_queryset()
-    course_typedict = {'kind':'course',
-                       'filters':{'.semester-1':'1st Semester',
-                                 '.semester-2':'2nd Semester'},
+    
+    if request.method == 'POST':
+        tosub = request.POST['apply_button']
+        act_course = Course.objects.get(pk=tosub)
+        act_semester = UserSemester.objects.get(user=request.user.id,
+                                                year=act_course.year,
+                                                semester=act_course.semester)
+        applicants = [_c.user_semester.user.id for _c in 
+                      act_course.courseattendance_set.all()]
+        if request.user.id in applicants:
+            if len(applicants) <= act_course.minapplicants:
+                #WARNING BERAGADÁS
+                pass
+            else:
+                Application(user_semester=act_semester,course=act_course,
+                            app_type='drop',
+                            time=time.strftime('%Y-%m-%d %H:%M:%S')).save()
+                CourseAttendance.objects.get(user_semester=act_semester,
+                                 course=act_course).delete()
+        else:
+            Application(user_semester=act_semester,course=act_course,
+                        app_type='apply',
+                        time=time.strftime('%Y-%m-%d %H:%M:%S')).save()
+            CourseAttendance(user_semester=act_semester,course=act_course,
+                             app_type='2-corr',
+                             app_comment=time.strftime('%Y-%m-%d %H:%M:%S')).save()
+    
+    poss = set(SemesterConfig.objects.all().values_list('year','institution'))
+    for_select = {}
+    for k,ind in {'year':0,'inst':1}.items():
+        for_select[k] = [p[ind] for p in poss]
+        for_select[k].sort()
+
+    if request.method == 'GET' \
+                    and 'year' in request.GET and 'inst' in request.GET:
+        act_inst = request.GET['inst']
+        act_year = request.GET['year']
+    else:
+        act_inst = for_select['inst'][0]
+        act_year = for_select['year'][-1]
+    courses = Course.objects.filter(year=act_year,institution=act_inst)
+    
+    #TODO: very slow, quite shit, make it better!
+    for c in courses:
+        if c.is_attending(request.user):
+            c.am_attending = True  
+        
+    for_select['year'] = [(y,'%d/%d' % (y,y+1)) for y in set(for_select['year'])]
+    for_select['inst'] = [(idx,Institution.objects.get(pk=idx).shortname)
+                           for idx in set(for_select['inst'])]
+    
+    course_filter_form = CourseFilter(for_select,initial={'year':act_year,
+                                                         'inst':act_inst})
+    
+    course_typedict = {'filters':{'.semester-1':'1st Semester',
+                                 '.semester-2':'2nd Semester',
+                                 '.attending-1':'I Applied'},
+                                 #'space-1':'Not full',
+                                 #'nogo-1':'Too few'},
                        'sorters':{'maxallowed':['data-max-allowed','Maximum'],
                                  'semester':['data-semester','Semester'],
-                                 'name':['data-cname','Name'],
-                                 'year':['data-year','Year']
-                           }}
+                                 'name':['data-cname','Name']},
+                                 #'currentapplicants':['data-currentapplicants','Applicants']},
+                        'griditem_template':'riki/course-griditem.html'}
     
     
-    return render(request, 'riki/courses.html',
+    return render(request, 'riki/gridpage.html',
                             {'user':request.user,
-                            'courses':courses,
-                            'course_typedict':course_typedict})
+                            'queryset':courses,
+                            'typedict':course_typedict,
+                            'filterform':course_filter_form,
+                            'navtitle':'Courses'})
 
 @login_required
 def projects(request):
     works = Work.objects.get_queryset()
-    project_typedict = {'kind':'project',
+    project_typedict = {'griditem_template':'riki/project-griditem.html',
                        'filters':{'.hascourse':'Course Related',
                                  ':not(.hascourse)':'Not Course Related'},
                        'sorters':{'latest':['data-latest','Latest']
                            }}
-    return render(request, 'riki/projects.html',
+    return render(request, 'riki/gridpage.html',
                             {'user':request.user,
-                             'projects':works,
-                             'project_typedict':project_typedict})
+                             'queryset':works,
+                             'typedict':project_typedict,
+                             'navtitle':'Projects'})
 
 @login_required
 def profiles(request):
@@ -173,53 +227,6 @@ def project(request,project_id):
                                                 'formset':versionforms,
                                                 'edit':edit,
                                                 'project':work})
-
-
-
-
-class WorkForm(ModelForm):
-    
-    def __init__(self,*args,actuser=None,courserestrict=Course.objects,**kwargs):
-        super(WorkForm,self).__init__(*args,**kwargs)
-        self.fields['courses'].queryset = courserestrict
-        self.fields['courses'].required = False
-        self.fields['attribute'].required = False
-        if type(actuser) != type(None):
-            self.fields['collaborators'].initial = [actuser]
-        
-    class Meta:
-        model = Work
-        exclude = []
-        widgets = {
-            'title':forms.Textarea(attrs={'cols':80,'rows':2}),
-            'abstract':forms.Textarea(attrs={'cols':80,'rows':10}),
-            'attribute':forms.SelectMultiple(attrs={
-                    'class': 'chosen-select',
-                    'multiple tabindex': '4',
-                        }),
-            'collaborators':forms.SelectMultiple(attrs={
-                    'class': 'chosen-select',
-                    'multiple tabindex': '4',
-                        }),
-            'courses':forms.SelectMultiple(attrs={
-                    'class': 'chosen-select',
-                    'multiple tabindex': '4',
-                        })
-            }
-        #fields = ['title', 'abstract', 'collaborators', 'attributes']
-
-class VersionForm(ModelForm):
-    
-    file_upload = forms.FileField(required=False)
-    
-    class Meta:
-        model = Version
-        fields = ['title', 'comment', 'type','id']
-        widgets = {
-            'title':forms.Textarea(attrs={'cols':80,'rows':2}),
-            'comment':forms.Textarea(attrs={'cols':50,'rows':1}),
-            'update_time':forms.HiddenInput()
-            }
 
 
 def handle_uploaded_file(f,link):

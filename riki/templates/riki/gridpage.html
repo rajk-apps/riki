@@ -1,0 +1,27 @@
+{% extends 'riki/riki_base.html' %}
+{% block navtitle %}
+    <h4>{{ navtitle }}</h4>
+{% endblock %}
+
+{% block page %}
+<div id="wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+              <form action="" method="get">
+                {% for field in filterform %}
+                {{ field }}
+                {% endfor %}
+                <input type="submit" value=">>">
+              </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% include "riki/rendergrid.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -9,7 +9,7 @@ class Institution(models.Model):
     members = models.ManyToManyField(User,through='Path')
 
     def __str__(self):
-        return self.longname
+        return self.shortname
 
 class Path(models.Model):
     
@@ -33,6 +33,7 @@ class Path(models.Model):
 
 class Course(models.Model):
     
+    am_attending = False
     
     teachers = models.ManyToManyField(User,related_name='teacher')
     
@@ -48,30 +49,39 @@ class Course(models.Model):
     comment = models.CharField(max_length=250,null=True,blank=True)
     language = models.CharField(max_length=3,default='HU')
     
-    attribute = models.ManyToManyField('AttributeTag')
+    attribute = models.ManyToManyField('AttributeTag',blank=True)
     
     def __str__(self):
-        return self.name + ' - ' + str(self.year)
+        return '%s (%d, %d) - %s' % (self.name,self.year,
+                                        self.semester,
+                            ','.join([i.shortname for i in self.institution.all()]))
     
     def current_members(self):
-        act_config = SemesterConfig.objects.get(year=self.year,
-                                                semester=self.semester,
-                                                institution=self.institution.first()) #FIXME!!!
-        if act_config.preapp_open:
-            return self.preapplication_set.all()
-        if act_config.app_open:
-            return self.application_set.all()
+        
         return [{'user':u.user_semester.user,
-                 'plus1':u.result} for u in self.courseattendance_set.all()]
+                 'plus_info':' - '.join([u.get_app_type_display(),
+                                         u.app_comment]),
+                 'result':u.result} for u in 
+                 self.courseattendance_set.order_by('app_type','app_comment')]
+
+    def is_attending(self,user):
+        return (user in [u.user_semester.user
+                        for u in self.courseattendance_set.all()])
 
     def get_filtertags(self):
-        return ['semester-%d' % self.semester]
+        currnum = len(self.current_members())
+        
+        return ['semester-%d' % self.semester,
+                'attending-%d' % int(self.am_attending),
+                'space-%d' % int(currnum<self.maxapplicants),
+                'nogo-%d' % int(currnum<self.minapplicants)]
     
     def get_sortdict(self):
         return {'data-year':self.year,
                 'data-cname':self.name,
                 'data-semester':self.semester,
-                'data-max-allowed':self.maxapplicants}
+                'data-max-allowed':self.maxapplicants,
+                'data-currentapplicants':len(self.current_members())}
 
 class UserSemester(models.Model):
     
@@ -99,7 +109,7 @@ class Preapplication(models.Model):
     preference = models.PositiveSmallIntegerField()
     
     def __str__(self):
-        return str(self.user_semester) + ' - ' + self.course.name + ' - ' + str(self.preference)
+        return ' - '.join([str(self.user_semester),self.course.name,str(self.preference)])
 
 class Application(models.Model):
 
@@ -107,8 +117,14 @@ class Application(models.Model):
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     time = models.DateTimeField()
     
+    APP_CHOICE = [('apply','apply'),
+               ('drop','drop')]
+    
+    app_type = models.CharField(max_length=10,choices=APP_CHOICE,default='apply')
+    
     def __str__(self):
-        return str(self.user_semester) + ' - ' + self.course.name + ' - ' + str(self.time)
+        return ' - '.join([str(self.user_semester),self.course.name,
+                           str(self.time),self.app_type])
     
 
 class CourseAttendance(models.Model):
@@ -116,12 +132,19 @@ class CourseAttendance(models.Model):
     user_semester = models.ForeignKey(UserSemester,on_delete=models.CASCADE)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     
-    CHOICES = [('TBD','TBD'),
+    RESULT_CHOICE = [('TBD','TBD'),
                ('pass','pass'),
                ('fail','fail'),
                ('distinction','distinction')]
     
-    result = models.CharField(max_length=20,choices=CHOICES,default='TBD')
+    result = models.CharField(max_length=20,choices=RESULT_CHOICE,default='TBD')
+    
+    APP_CHOICE = [('1-pref','Preference-based'),
+               ('2-corr','Time-based')]
+    
+    app_type = models.CharField(max_length=20,choices=APP_CHOICE,default='2-corr')
+    
+    app_comment = models.CharField(max_length=40,default='',blank=True,null=True)
     
     def __str__(self):
         return str(self.user_semester) + ' - ' + self.course.name + ' - ' + str(self.result)
@@ -139,6 +162,9 @@ class SemesterConfig(models.Model):
     
     preapp_open = models.BooleanField(default=False)
     app_open = models.BooleanField(default=False)
+    
+    specially_open = models.ManyToManyField('Course',
+                                       blank=True)
     
     def __str__(self):
         return "%s - %d - %d" % (self.institution.shortname,
