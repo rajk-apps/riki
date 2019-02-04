@@ -78,9 +78,13 @@ def courses(request):
     courses = Course.objects.filter(year=act_year,institution=act_inst)
     
     #TODO: very slow, quite shit, make it better!
+    sconfs = SemesterConfig.objects.filter(year=act_year,institution=act_inst)
+    open_semesters = [sc.semester for sc in sconfs if sc.app_open]
     for c in courses:
         if c.is_attending(request.user):
-            c.am_attending = True  
+            c.am_attending = True
+        if c.semester in open_semesters:
+            c.is_open = True
         
     for_select['year'] = [(y,'%d/%d' % (y,y+1)) for y in set(for_select['year'])]
     for_select['inst'] = [(idx,Institution.objects.get(pk=idx).shortname)
@@ -91,13 +95,12 @@ def courses(request):
     
     course_typedict = {'filters':{'.semester-1':'1st Semester',
                                  '.semester-2':'2nd Semester',
-                                 '.attending-1':'I Applied'},
-                                 #'space-1':'Not full',
-                                 #'nogo-1':'Too few'},
-                       'sorters':{'maxallowed':['data-max-allowed','Maximum'],
-                                 'semester':['data-semester','Semester'],
-                                 'name':['data-cname','Name']},
-                                 #'currentapplicants':['data-currentapplicants','Applicants']},
+                                 '.attending-1':'I Applied',
+                                 '.space-1':'Not full',
+                                 '.nogo-1':'Too few'},
+                       'sorters':{'semester':['data-semester','Semester'],
+                                 'name':['data-cname','Name'],
+                                 'currentapplicants':['data-currentapplicants','Applicants']},
                         'griditem_template':'riki/course-griditem.html'}
     
     

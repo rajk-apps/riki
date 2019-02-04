@@ -34,9 +34,9 @@ class Path(models.Model):
 class Course(models.Model):
     
     am_attending = False
+    is_open = False
     
     teachers = models.ManyToManyField(User,related_name='teacher')
-    
     institution = models.ManyToManyField('Institution')
     
     year = models.PositiveIntegerField()
@@ -66,7 +66,7 @@ class Course(models.Model):
 
     def is_attending(self,user):
         return (user in [u.user_semester.user
-                        for u in self.courseattendance_set.all()])
+                        for u in self.courseattendance_set.all()])                       
 
     def get_filtertags(self):
         currnum = len(self.current_members())
@@ -80,8 +80,7 @@ class Course(models.Model):
         return {'data-year':self.year,
                 'data-cname':self.name,
                 'data-semester':self.semester,
-                'data-max-allowed':self.maxapplicants,
-                'data-currentapplicants':len(self.current_members())}
+                'data-currentapplicants':"{:03}".format(len(self.current_members()))}
 
 class UserSemester(models.Model):
     
