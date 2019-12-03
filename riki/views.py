@@ -14,14 +14,18 @@ def home(request):
     
     my_projects = [c.work for c in request.user.collaboration_set.all().reverse()]
         
-    workform = WorkForm(courserestrict=my_courses,actuser=request.user)
+    workform = WorkForm(courserestrict=my_courses, actuser=request.user)
 
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
         wf = WorkForm(request.POST)
         if wf.is_valid():
-            work = wf.save()
+            work = wf.save(commit=False)
+            work.save()
+            for collaborator in wf.cleaned_data.get('collaborators'):
+                collab_link = Collaboration(work=work, groupe=collaborator)
+                collab_link.save()
             return redirect('riki:project',project_id=work.id)
         
     
