@@ -24,7 +24,7 @@ def home(request):
             work = wf.save(commit=False)
             work.save()
             for collaborator in wf.cleaned_data.get('collaborators'):
-                collab_link = Collaboration(work=work, groupe=collaborator)
+                collab_link = Collaboration(work=work, user=collaborator)
                 collab_link.save()
             return redirect('riki:project',project_id=work.id)
         
