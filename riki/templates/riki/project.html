@@ -57,7 +57,7 @@
         <hr>
         {% endfor %}
         {% else %}
-        {% with project=project template_name="riki/project-griditem.html" %}
+        {% with element=project template_name="riki/project-griditem.html" %}
                     {% include template_name %}
                 {% endwith %}
         {% endif %}
