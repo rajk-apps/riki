@@ -9,3 +9,4 @@ pytest-cov
 codecov
 toml
 flake8
+django

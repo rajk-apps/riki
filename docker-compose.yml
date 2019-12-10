@@ -1,0 +1,20 @@
+version: '3'
+services:
+   devcont:
+     build:
+       context: .
+       dockerfile: dev.Dockerfile
+       args:
+         APP_NAME: ${APP_NAME}
+         DJANGO_PROJECT: ${DJANGO_PROJECT}
+         HOST_IP: ${HOST_IP}
+         APP_PORT: ${APP_PORT}
+     image: ${APP_NAME}:dev
+     stdin_open: true
+     tty: true
+     ports:
+       - "${HOST_IP}:${APP_PORT}:${APP_PORT}"
+     volumes:
+       - ./${APP_NAME}:/${DJANGO_PROJECT}/${APP_NAME}
+     environment:
+       - PORT_NO=${APP_PORT}

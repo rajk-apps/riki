@@ -10,11 +10,11 @@ def new(c):
     version = mymodule.__version__
 
     f = io.StringIO()
-    c.run("git branch", out_stream=f)
+    c.run("git rev-parse --abbrev-ref HEAD", out_stream=f)
     branch = f.getvalue().strip()
     f.close()
 
-    if branch.endswith("master"):
+    if branch == "master":
         tag_version = "v{}".format(version)
         f2 = io.StringIO()
         c.run("git tag", out_stream=f2)

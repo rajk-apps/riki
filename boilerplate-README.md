@@ -57,3 +57,11 @@ This is a python package template
 - solve the stupid sys path append issue with the notebooks
 - add build if cython is present, toml (invoke?) for build reqs
 - check requirements
+
+
+## set as remote for updates:
+
+```git remote add boilerplate git@github.com:endremborza/python_boilerplate.git```
+```git fetch boilerplate```
+```git merge boilerplate/master --allow-unrelated-histories``` if end is needed
+```git checkout --ours / --theirs for conflicts```
