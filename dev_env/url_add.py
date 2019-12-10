@@ -2,6 +2,8 @@ from .urls import *
 from django.urls import include
 import os
 
+from django.contrib.admin.sites import site
+
 urlpatterns += [path("{}/".format(os.environ.get('APP_NAME')),
                      include("{}.urls".format(os.environ.get('APP_NAME')))),
-                path('accounts/login/', include('django.contrib.auth.views.login'))]
+                path('accounts/login/', site.login)]
