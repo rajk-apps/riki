@@ -1,0 +1,5 @@
+sphinx
+graphviz
+sphinx-automodapi
+pygments
+jupyter

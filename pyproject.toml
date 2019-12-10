@@ -1,0 +1,11 @@
+[project]
+name = "mypackage"
+description = "Template package"
+authors = [
+    "Endre Márk Borza"
+]
+license = "MIT"
+readme = "README.md"
+python = ">=3.7"
+url = "https://github.com/endremborza/mypackage"
+keywords="boilerplate"

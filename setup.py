@@ -1,34 +1,34 @@
-import os
+import toml
+import importlib
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
-    README = readme.read()
+pytom = toml.load("pyproject.toml")
+package_name = pytom["project"]["name"]
+author_name = " - ".join(pytom["project"]["authors"])
 
-# allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+mymodule = importlib.import_module(package_name)
 
-setup(
-    name='riki',
-    version='0.1.0',
-    packages=find_packages(),
-    include_package_data=True,
-    license='MIT License',
-    description='Rajk course management',
-    url='https://github.com/rajk-apps/riki',
-    long_description=README,
-    author='Endre Márk Borza',
-    author_email='endremborza@gmail.com',
-    classifiers=[
-        'Environment :: Web Environment',
-        'Framework :: Django',
-        'Framework :: Django :: 2.0.6',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    ],
-)
+
+with open("README.md") as fp:
+    long_description = fp.read()
+
+with open("requirements.txt") as fp:
+    requirements = fp.read().strip().split()
+
+if __name__ == "__main__":
+    setup(
+        name=package_name,
+        version=mymodule.__version__,
+        description=pytom["project"]["description"],
+        long_description=long_description,
+        license="MIT",
+        classifiers=["License :: OSI Approved :: MIT License"],
+        url=pytom["project"]["url"],
+        keywords=pytom["project"].get("keywords"),
+        author=author_name,
+        packages=find_packages(),
+        include_package_data=True,
+        python_requires=pytom["project"]["python"],
+        platforms="any",
+        install_requires=requirements,
+    )
