@@ -15,172 +15,429 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Application',
+            name="Application",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time', models.DateTimeField()),
-                ('app_type', models.CharField(choices=[('apply', 'apply'), ('drop', 'drop')], default='apply', max_length=10)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("time", models.DateTimeField()),
+                (
+                    "app_type",
+                    models.CharField(
+                        choices=[("apply", "apply"), ("drop", "drop")],
+                        default="apply",
+                        max_length=10,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='AttributeTag',
+            name="AttributeTag",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, max_length=250, null=True)),
-                ('kind', models.CharField(choices=[('keyword', 'keyword'), ('work_merit', 'work_merit')], default='keyword', max_length=20)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "kind",
+                    models.CharField(
+                        choices=[("keyword", "keyword"), ("work_merit", "work_merit")],
+                        default="keyword",
+                        max_length=20,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Collaboration',
+            name="Collaboration",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(blank=True, choices=[('author', 'Author'), ('reviewer', 'Reviewer'), ('advisor', 'Advisor'), ('translator', 'Translator')], default='author', max_length=20, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("author", "Author"),
+                            ("reviewer", "Reviewer"),
+                            ("advisor", "Advisor"),
+                            ("translator", "Translator"),
+                        ],
+                        default="author",
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.PositiveIntegerField()),
-                ('semester', models.PositiveSmallIntegerField()),
-                ('minapplicants', models.PositiveSmallIntegerField()),
-                ('maxapplicants', models.PositiveSmallIntegerField()),
-                ('syllabus', models.CharField(max_length=250)),
-                ('name', models.CharField(max_length=100)),
-                ('comment', models.CharField(blank=True, max_length=250, null=True)),
-                ('language', models.CharField(default='HU', max_length=3)),
-                ('attribute', models.ManyToManyField(blank=True, to='riki.AttributeTag')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("year", models.PositiveIntegerField()),
+                ("semester", models.PositiveSmallIntegerField()),
+                ("minapplicants", models.PositiveSmallIntegerField()),
+                ("maxapplicants", models.PositiveSmallIntegerField()),
+                ("syllabus", models.CharField(max_length=250)),
+                ("name", models.CharField(max_length=100)),
+                ("comment", models.CharField(blank=True, max_length=250, null=True)),
+                ("language", models.CharField(default="HU", max_length=3)),
+                (
+                    "attribute",
+                    models.ManyToManyField(blank=True, to="riki.AttributeTag"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CourseAttendance',
+            name="CourseAttendance",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('result', models.CharField(choices=[('TBD', 'TBD'), ('pass', 'pass'), ('fail', 'fail'), ('distinction', 'distinction')], default='TBD', max_length=20)),
-                ('app_type', models.CharField(choices=[('1-pref', 'Preference-based'), ('2-corr', 'Time-based')], default='2-corr', max_length=20)),
-                ('app_comment', models.CharField(blank=True, default='', max_length=40, null=True)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Course')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "result",
+                    models.CharField(
+                        choices=[
+                            ("TBD", "TBD"),
+                            ("pass", "pass"),
+                            ("fail", "fail"),
+                            ("distinction", "distinction"),
+                        ],
+                        default="TBD",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "app_type",
+                    models.CharField(
+                        choices=[
+                            ("1-pref", "Preference-based"),
+                            ("2-corr", "Time-based"),
+                        ],
+                        default="2-corr",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "app_comment",
+                    models.CharField(blank=True, default="", max_length=40, null=True),
+                ),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="riki.Course"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Institution',
+            name="Institution",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('longname', models.CharField(max_length=100)),
-                ('shortname', models.CharField(max_length=20)),
-                ('website', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("longname", models.CharField(max_length=100)),
+                ("shortname", models.CharField(max_length=20)),
+                ("website", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Path',
+            name="Path",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('yearfrom', models.PositiveIntegerField()),
-                ('yearto', models.PositiveIntegerField(blank=True, null=True)),
-                ('graduated', models.BooleanField(default=False)),
-                ('institution', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Institution')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("yearfrom", models.PositiveIntegerField()),
+                ("yearto", models.PositiveIntegerField(blank=True, null=True)),
+                ("graduated", models.BooleanField(default=False)),
+                (
+                    "institution",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="riki.Institution",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Preapplication',
+            name="Preapplication",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('preference', models.PositiveSmallIntegerField()),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Course')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("preference", models.PositiveSmallIntegerField()),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="riki.Course"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SemesterConfig',
+            name="SemesterConfig",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.PositiveIntegerField()),
-                ('semester', models.PositiveSmallIntegerField()),
-                ('preapp_open', models.BooleanField(default=False)),
-                ('app_open', models.BooleanField(default=False)),
-                ('institution', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Institution')),
-                ('specially_open', models.ManyToManyField(blank=True, to='riki.Course')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("year", models.PositiveIntegerField()),
+                ("semester", models.PositiveSmallIntegerField()),
+                ("preapp_open", models.BooleanField(default=False)),
+                ("app_open", models.BooleanField(default=False)),
+                (
+                    "institution",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="riki.Institution",
+                    ),
+                ),
+                (
+                    "specially_open",
+                    models.ManyToManyField(blank=True, to="riki.Course"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserSemester',
+            name="UserSemester",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.PositiveIntegerField()),
-                ('semester', models.PositiveSmallIntegerField()),
-                ('applications', models.ManyToManyField(related_name='semester_application', through='riki.Application', to='riki.Course')),
-                ('attendance', models.ManyToManyField(related_name='semester_attendance', through='riki.CourseAttendance', to='riki.Course')),
-                ('preapplications', models.ManyToManyField(related_name='semester_preapplication', through='riki.Preapplication', to='riki.Course')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("year", models.PositiveIntegerField()),
+                ("semester", models.PositiveSmallIntegerField()),
+                (
+                    "applications",
+                    models.ManyToManyField(
+                        related_name="semester_application",
+                        through="riki.Application",
+                        to="riki.Course",
+                    ),
+                ),
+                (
+                    "attendance",
+                    models.ManyToManyField(
+                        related_name="semester_attendance",
+                        through="riki.CourseAttendance",
+                        to="riki.Course",
+                    ),
+                ),
+                (
+                    "preapplications",
+                    models.ManyToManyField(
+                        related_name="semester_preapplication",
+                        through="riki.Preapplication",
+                        to="riki.Course",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Version',
+            name="Version",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('update_time', models.DateTimeField()),
-                ('title', models.CharField(max_length=200)),
-                ('comment', models.CharField(blank=True, max_length=200, null=True)),
-                ('link', models.CharField(max_length=200)),
-                ('type', models.CharField(choices=[('paper', 'Paper'), ('essay', 'Essay'), ('review', 'Review'), ('presentation', 'Presentation'), ('data', 'Data'), ('publication', 'Publication'), ('code', 'Code'), ('competition', 'Competition'), ('confpaper', 'Conference Paper')], default='paper', max_length=40)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("update_time", models.DateTimeField()),
+                ("title", models.CharField(max_length=200)),
+                ("comment", models.CharField(blank=True, max_length=200, null=True)),
+                ("link", models.CharField(max_length=200)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("paper", "Paper"),
+                            ("essay", "Essay"),
+                            ("review", "Review"),
+                            ("presentation", "Presentation"),
+                            ("data", "Data"),
+                            ("publication", "Publication"),
+                            ("code", "Code"),
+                            ("competition", "Competition"),
+                            ("confpaper", "Conference Paper"),
+                        ],
+                        default="paper",
+                        max_length=40,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Work',
+            name="Work",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('abstract', models.TextField()),
-                ('attribute', models.ManyToManyField(to='riki.AttributeTag')),
-                ('collaborators', models.ManyToManyField(through='riki.Collaboration', to=settings.AUTH_USER_MODEL)),
-                ('courses', models.ManyToManyField(to='riki.Course')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("abstract", models.TextField()),
+                ("attribute", models.ManyToManyField(to="riki.AttributeTag")),
+                (
+                    "collaborators",
+                    models.ManyToManyField(
+                        through="riki.Collaboration", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                ("courses", models.ManyToManyField(to="riki.Course")),
             ],
         ),
         migrations.AddField(
-            model_name='version',
-            name='work',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Work'),
+            model_name="version",
+            name="work",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.Work"
+            ),
         ),
         migrations.AddField(
-            model_name='preapplication',
-            name='user_semester',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.UserSemester'),
+            model_name="preapplication",
+            name="user_semester",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.UserSemester"
+            ),
         ),
         migrations.AddField(
-            model_name='institution',
-            name='members',
-            field=models.ManyToManyField(through='riki.Path', to=settings.AUTH_USER_MODEL),
+            model_name="institution",
+            name="members",
+            field=models.ManyToManyField(
+                through="riki.Path", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='courseattendance',
-            name='user_semester',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.UserSemester'),
+            model_name="courseattendance",
+            name="user_semester",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.UserSemester"
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='institution',
-            field=models.ManyToManyField(to='riki.Institution'),
+            model_name="course",
+            name="institution",
+            field=models.ManyToManyField(to="riki.Institution"),
         ),
         migrations.AddField(
-            model_name='course',
-            name='teachers',
-            field=models.ManyToManyField(related_name='teacher', to=settings.AUTH_USER_MODEL),
+            model_name="course",
+            name="teachers",
+            field=models.ManyToManyField(
+                related_name="teacher", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='collaboration',
-            name='work',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Work'),
+            model_name="collaboration",
+            name="work",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.Work"
+            ),
         ),
         migrations.AddField(
-            model_name='application',
-            name='course',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.Course'),
+            model_name="application",
+            name="course",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.Course"
+            ),
         ),
         migrations.AddField(
-            model_name='application',
-            name='user_semester',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='riki.UserSemester'),
+            model_name="application",
+            name="user_semester",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="riki.UserSemester"
+            ),
         ),
     ]

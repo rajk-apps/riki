@@ -1,11 +1,11 @@
 [project]
-name = "mydjangoapp"
-description = "Template django app"
+name = "riki"
+description = "class management app"
 authors = [
     "Endre Márk Borza"
 ]
 license = "MIT"
 readme = "README.md"
 python = ">=3.7"
-url = "https://github.com/endremborza/mypackage"
+url = "https://github.com/rajk-apps/riki"
 keywords="boilerplate"
