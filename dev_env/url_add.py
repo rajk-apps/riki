@@ -4,4 +4,4 @@ import os
 
 urlpatterns += [path("{}/".format(os.environ.get('APP_NAME')),
                      include("{}.urls".format(os.environ.get('APP_NAME')))),
-                path('accounts/login/', 'django.contrib.auth.views.login')]
+                path('accounts/login/', include('django.contrib.auth.views.login'))]
