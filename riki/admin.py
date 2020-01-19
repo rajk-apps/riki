@@ -15,3 +15,13 @@ class InstitutionAdmin(admin.ModelAdmin):
 @admin.register(SemesterConfig)
 class SemesterConfigAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Preapplication)
+class PreappAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
+    pass
