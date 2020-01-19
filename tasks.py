@@ -1,4 +1,6 @@
 from invoke import Collection
+from invoke_commands import release, docs, clean, sonar, test, django, misc
+
 
 ns = Collection()
 ns.add_collection(Collection.from_module(release))
