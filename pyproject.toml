@@ -6,6 +6,6 @@ authors = [
 ]
 license = "MIT"
 readme = "README.md"
-python = ">=3.7"
+python = ">=3.5"
 url = "https://github.com/rajk-apps/riki"
-keywords="boilerplate"
+keywords="classroom"
