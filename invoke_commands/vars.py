@@ -10,4 +10,4 @@ doc_notebooks_dir = "notebooks"
 
 mymodule = importlib.import_module(package_name)
 
-boilerplate_branch = "master"
+boilerplate_branch = "django-app"

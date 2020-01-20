@@ -9,7 +9,7 @@ def lint(c):
 
 
 @task
-def update_boilerplate(c):
+def update_boilerplate(c):  # TODO: maybe drop template package folder
     c.run("git fetch boilerplate")  # TODO: this knows the name of the remote
     c.run("git merge boilerplate/{} --no-edit".format(boilerplate_branch))
 

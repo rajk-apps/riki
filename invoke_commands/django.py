@@ -1,6 +1,6 @@
 from invoke import task
 
-from .vars import package_name
+from .vars import package_name, boilerplate_branch
 
 
 @task
@@ -13,13 +13,6 @@ def setup_dev(c):
 
 @task
 def clean(c):
-    c.run("rm -{}/migrations/*".format(package_name))
-
-
-@task
-def update_boilerplate(c, drop=False):
-    c.run("git fetch boilerplate")
-    c.run("git merge boilerplate/django-app --no-edit")
-    if drop:
-        c.run("rm -rf mydjangoapp")
-        c.run("rm -rf mypackage")
+    c.run("rm -rf {}/migrations/*".format(package_name))
+    c.run("docker kill {}_devcont_1".format(package_name))
+    c.run("docker container rm {}_devcont_1".format(package_name))
