@@ -31,5 +31,5 @@ jobs:
         RAJK_PASSWORD: ${{ secrets.RAJK_PASSWORD }}
         RAJK_RSA: ${{ secrets.RAJK_RSA }}
       run: |
-        inv rajk.deploy
+        inv rajk.deploy --live --redo-rsa
       if: github.event == 'push'
