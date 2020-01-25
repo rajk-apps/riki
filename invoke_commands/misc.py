@@ -4,7 +4,7 @@ from .vars import package_name, boilerplate_branch
 
 @task
 def lint(c):
-    c.run("black {}".format(package_name))
+    c.run("black . --exclude \.*venv".format(package_name))
     c.run("flake8 {}".format(package_name))
 
 

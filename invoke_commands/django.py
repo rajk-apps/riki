@@ -5,11 +5,14 @@ from .vars import package_name, boilerplate_branch
 
 @task
 def setup_dev(c):
-    c.run("APP_NAME={} " .format(package_name) +
-          "DJANGO_PROJECT={} ".format("dev_project") +  # FIXME: is this dry?
-          "HOST_IP={} ".format("0.0.0.0") +
-          "APP_PORT={} ".format(6969) +
-          "docker-compose up --build")  # -- build
+    c.run(
+        "APP_NAME={} ".format(package_name)
+        + "DJANGO_PROJECT={} ".format("dev_project")
+        + "HOST_IP={} ".format("0.0.0.0")  # FIXME: is this dry?
+        + "APP_PORT={} ".format(6969)
+        + "docker-compose up --build"
+    )  # -- build
+
 
 @task
 def clean(c):
