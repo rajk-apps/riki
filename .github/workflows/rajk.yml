@@ -1,4 +1,4 @@
-name: Rajk AppWorkflow
+name: Rajk App Workflow
 
 on:
   pull_request:
