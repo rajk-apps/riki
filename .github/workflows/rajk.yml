@@ -28,9 +28,9 @@ jobs:
         inv rajk.setup-test-deploy-env
         inv rajk.deploy
     - name: Deploy Live
+      if: github.event_name == 'push'
       env:
         RAJK_PASSWORD: ${{ secrets.RAJK_PASSWORD }}
         RAJK_RSA: ${{ secrets.RAJK_RSA }}
       run: |
         inv rajk.deploy --live --redo-rsa
-      if: github.event == 'push'
