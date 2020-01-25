@@ -27,7 +27,7 @@ jobs:
         inv test.test
         inv rajk.setup-test-deploy-env
         inv rajk.deploy
-    - name: Deploy
+    - name: Deploy Live
       env:
         RAJK_PASSWORD: ${{ secrets.RAJK_PASSWORD }}
         RAJK_RSA: ${{ secrets.RAJK_RSA }}
