@@ -2,7 +2,7 @@
             {% for k,v in element.get_sortdict.items %} {{k}}="{{v}}" {% endfor %}>
         <div class="card">
             <div class ="card-header">
-                <b>{{ element.name }}</b> ({{element.language}}) - {{ element.year }} / {{element.year|add:"1" }} - {{ element.semester }}
+                info: <b>{{ element.name }}</b> ({{element.language}}) - {{ element.year }} / {{element.year|add:"1" }} - {{ element.semester }}
             </div>
             <div class="card-body">
                 <div class="row">
