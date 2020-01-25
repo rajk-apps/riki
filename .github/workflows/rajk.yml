@@ -1,0 +1,30 @@
+name: Rajk AppWorkflow
+
+on:
+  pull_request:
+    branches: 
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-init.txt
+    - name: Test
+      env:
+        RAJK_PASSWORD: ${{ secrets.RAJK_PASSWORD }}
+      run: |
+        inv rajk.test
+    - name: Deploy
+      env:
+        RAJK_PASSWORD: ${{ secrets.RAJK_PASSWORD }}
+      run: inv rajk.deploy
+      if: github.event == 'push'
