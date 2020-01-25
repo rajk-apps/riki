@@ -1,4 +1,3 @@
-toml
 django
 #rajk_appman
 git+https://github.com/rajk-apps/rajk-appman.git
