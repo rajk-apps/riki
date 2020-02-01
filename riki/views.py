@@ -11,9 +11,8 @@ from django.http.response import HttpResponse
 def home(request):
 
     my_courses = Course.objects.filter(
-        application__in=request.user.usersemester_set.all().values("application")
-    ).order_by("-year", "-semester")
-
+        courseattendance__in=request.user.usersemester_set.all().values("courseattendance")
+    ).distinct().order_by("-year", "-semester")
     my_projects = [c.work for c in request.user.collaboration_set.all().reverse()]
 
     workform = WorkForm(courserestrict=my_courses, actuser=request.user)
@@ -100,12 +99,14 @@ def courses(request):
 
     # TODO: very slow, quite shit, make it better!
     sconfs = SemesterConfig.objects.filter(year=act_year, institution=act_inst)
-    open_semesters = [sc.semester for sc in sconfs if sc.app_open]
+    open_semesters = [sc.semester for sc in sconfs
+                      if (sc.app_open or (request.user in sc.specially_open_for_person.all()))]
     for c in courses:
         if c.is_attending(request.user):
             c.am_attending = True
         if c.semester in open_semesters:
-            c.is_open = True
+            if request.user.usersemester_set.filter(year=c.year, semester=c.semester):
+                c.is_open = True
 
     for_select["year"] = [(y, "%d/%d" % (y, y + 1)) for y in set(for_select["year"])]
     for_select["inst"] = [

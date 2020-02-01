@@ -30,3 +30,8 @@ class PreappAdmin(admin.ModelAdmin):
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(CourseAttendance)
+class CourseAttendanceAdmin(admin.ModelAdmin):
+    pass
