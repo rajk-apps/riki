@@ -1,0 +1,54 @@
+[
+{
+  "model": "mydjangoapp.question",
+  "pk": 1,
+  "fields": {
+    "question_text": "Hm?",
+    "pub_date": "2020-01-29T23:55:05Z"
+  }
+},
+{
+  "model": "mydjangoapp.question",
+  "pk": 2,
+  "fields": {
+    "question_text": "Who's a good boy?",
+    "pub_date": "2020-01-20T13:15:00Z"
+  }
+},
+{
+  "model": "mydjangoapp.choice",
+  "pk": 1,
+  "fields": {
+    "question": 1,
+    "choice_text": "Yes!",
+    "votes": 0
+  }
+},
+{
+  "model": "mydjangoapp.choice",
+  "pk": 2,
+  "fields": {
+    "question": 1,
+    "choice_text": "42",
+    "votes": 0
+  }
+},
+{
+  "model": "mydjangoapp.choice",
+  "pk": 3,
+  "fields": {
+    "question": 2,
+    "choice_text": "seventeen",
+    "votes": 0
+  }
+},
+{
+  "model": "mydjangoapp.choice",
+  "pk": 4,
+  "fields": {
+    "question": 2,
+    "choice_text": "Billy Ocean",
+    "votes": 100
+  }
+}
+]

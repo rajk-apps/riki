@@ -10,11 +10,13 @@ services:
          HOST_IP: ${HOST_IP}
          APP_PORT: ${APP_PORT}
      image: ${APP_NAME}:dev
+     container_name: ${APP_NAME}_devcont_1
      stdin_open: true
      tty: true
      ports:
        - "${HOST_IP}:${APP_PORT}:${APP_PORT}"
      volumes:
        - ./${APP_NAME}:/${DJANGO_PROJECT}/${APP_NAME}
+       - ./dev_env/test_data:/test_data
      environment:
        - PORT_NO=${APP_PORT}
