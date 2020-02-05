@@ -193,6 +193,8 @@ class SemesterConfig(models.Model):
 
     specially_open_for_person = models.ManyToManyField(User, blank=True)
 
+    specially_closed_for_person = models.ManyToManyField(User, blank=True, related_name="outcast")
+
     def __str__(self):
         return "%s - %d - %d" % (self.institution.shortname, self.year, self.semester)
 

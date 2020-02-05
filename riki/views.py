@@ -100,7 +100,11 @@ def courses(request):
     # TODO: very slow, quite shit, make it better!
     sconfs = SemesterConfig.objects.filter(year=act_year, institution=act_inst)
     open_semesters = [sc.semester for sc in sconfs
-                      if (sc.app_open or (request.user in sc.specially_open_for_person.all()))]
+                      if ((sc.app_open or
+                          (request.user in sc.specially_open_for_person.all())
+                           ) and
+                          (request.user not in sc.specially_closed_for_person.all())
+                          )]
     for c in courses:
         if c.is_attending(request.user):
             c.am_attending = True
