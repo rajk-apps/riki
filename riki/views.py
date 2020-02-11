@@ -47,15 +47,16 @@ def home(request):
 def courses(request):
 
     if request.method == "POST":
+        course_id = request.POST["course_id"]
         tosub = request.POST["apply_button"]
-        act_course = Course.objects.get(pk=tosub)
+        act_course = Course.objects.get(pk=course_id)
         act_semester = UserSemester.objects.get(
             user=request.user.id, year=act_course.year, semester=act_course.semester
         )
         applicants = [
             _c.user_semester.user.id for _c in act_course.courseattendance_set.all()
         ]
-        if request.user.id in applicants:
+        if (request.user.id in applicants) and (tosub == "drop"):
             if len(applicants) <= act_course.minapplicants:
                 # WARNING BERAGADÁS
                 pass
@@ -69,7 +70,7 @@ def courses(request):
                 CourseAttendance.objects.get(
                     user_semester=act_semester, course=act_course
                 ).delete()
-        else:
+        elif (request.user.id not in applicants) and (tosub == "apply"):
             Application(
                 user_semester=act_semester,
                 course=act_course,

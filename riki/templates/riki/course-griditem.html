@@ -15,7 +15,10 @@
                     <div class="col-2">
                         {% if element.semesterconfig_set.exists or element.is_open %}
                         <form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
-                            <button name="apply_button" value="{{element.id}}" type="submit" class="btn btn-block btn-{% if element.am_attending %}danger{% else %}success{% endif %}">
+                            <input type="hidden" value="{{element.id}}" name="course_id">
+                            <button name="apply_button" value="{% if element.am_attending %}drop{% else %}apply{% endif %}"
+                                    type="submit"
+                                    class="btn btn-block btn-{% if element.am_attending %}danger{% else %}success{% endif %}">
                             {% if element.am_attending %}Drop{% else %}Apply{% endif %}
                             </button>
                         </form>
