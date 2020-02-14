@@ -4,8 +4,9 @@ import time
 
 from .models import *
 from .forms import *
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 
+from typing import List
 
 @login_required
 def home(request):
@@ -296,3 +297,23 @@ def handle_uploaded_file(f, link):
     with open(link, "wb+") as destination:
         for chunk in f.chunks():
             destination.write(chunk)
+
+
+def application_data(request):
+    app_list = Application.objects.all()
+    app_rec_list = _proc_applist(app_list)
+    return JsonResponse(app_rec_list, safe=False)
+
+
+def _proc_applist(app_list: List[Application]):
+
+    return [
+        {"user": a.user_semester.user.email,
+         "year": a.user_semester.year,
+         "semester": a.user_semester.semester,
+         "course_name": a.course.name,
+         "action": a.app_type,
+         "time": a.time
+         }
+        for a in app_list
+    ]

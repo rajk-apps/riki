@@ -12,4 +12,5 @@ urlpatterns = [
     path("att/<int:att_id>", views.attribute, name="att_page"),
     path("project/<int:project_id>", views.project, name="project"),
     path("uploads/<int:version_id>", views.version, name="version"),
+    path("application_data", views.application_data, name="application_data"),
 ]
