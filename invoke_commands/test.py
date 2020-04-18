@@ -3,15 +3,15 @@ import glob
 import json
 from invoke import task
 
-from .vars import package_name, doc_notebooks_dir
+from .vars import package_name, doctest_notebooks_glob
 
 
 @task
 def test(c, option="", html=False, xml=False, notebook_tests=True):
 
-    comm = "python -m pytest --cov={}".format(package_name)
+    comm = f"python -m pytest --cov={package_name}"
     if option:
-        comm += " --{}".format(option)
+        comm += f" --{option}"
     if html:
         comm += " --cov-report=html"
     elif xml:
@@ -19,9 +19,7 @@ def test(c, option="", html=False, xml=False, notebook_tests=True):
 
     if notebook_tests:
         new_test_scripts = []
-        for nb_idx, nb_file in enumerate(
-            glob.glob(os.path.join(doc_notebooks_dir, "*.ipynb"))
-        ):
+        for nb_idx, nb_file in enumerate(glob.glob(doctest_notebooks_glob)):
             nb_dic = json.load(open(nb_file))
             nb_code = "\n".join(
                 [
