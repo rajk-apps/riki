@@ -3,36 +3,36 @@ from invoke import task
 import glob
 import os
 
+from .vars import doctest_notebooks_glob
+
 pytom = toml.load("pyproject.toml")
 package_name = pytom["project"]["name"]
 author_name = " - ".join(pytom["project"]["authors"])
 
 doc_dir_name = "docs"
-doc_notebooks_dir = "notebooks"
 
 
 @task
 def build(c):
 
     c.run(
-        'sphinx-quickstart {} -p {} -a "{}" -q --ext-autodoc'.format(
-            doc_dir_name, package_name, author_name
-        )
+        f"sphinx-quickstart {doc_dir_name} -p {package_name} "
+        f'-a "{author_name}" -q --ext-autodoc'
     )
 
-    doc_notebooks = sorted(glob.glob("{}/*.ipynb".format(doc_notebooks_dir)))
+    doc_notebooks = sorted(glob.glob(doctest_notebooks_glob))
+    _doc_nbs_string = " ".join(doc_notebooks)
     c.run(
-        "jupyter nbconvert --to rst {} --output-dir={}/notebooks".format(
-            " ".join(doc_notebooks), doc_dir_name
-        )
+        f"jupyter nbconvert --to rst {_doc_nbs_string} "
+        f"--output-dir={doc_dir_name}/notebooks"
     )
     toc_nbs = [
-        "   notebooks/{}".format(np.split("/")[-1].split(".")[0])
-        for np in doc_notebooks
+        f"   notebooks/{os.path.split(nbp)[-1].split('.')[0]}"
+        for nbp in doc_notebooks
     ]
-
-    index_rst = """
-Welcome to {}'s documentation!
+    _toc_nb_lines = "\n".join(toc_nbs)
+    index_rst = f"""
+Welcome to {package_name}'s documentation!
 =====================================================================================
 
 .. toctree::
@@ -40,8 +40,8 @@ Welcome to {}'s documentation!
    :caption: Contents:
 
    autosumm
-{}
-   {}
+{_toc_nb_lines}
+   release_notes/main
 
 Indices and tables
 ==================
@@ -49,20 +49,15 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-""".format(
-        package_name, "\n".join(toc_nbs), "release_notes/main"
-    )
-
-    autosumm_rst = """
+"""
+    autosumm_rst = f"""
 
 API
 ===
 
-.. automodapi:: {}
+.. automodapi:: {package_name}
 
-""".format(
-        package_name
-    )
+"""
 
     with open(os.path.join(doc_dir_name, "index.rst"), "w") as fp:
         fp.write(index_rst)

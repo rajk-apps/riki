@@ -12,7 +12,9 @@ def setup(c):
 @task
 def scan(c):
 
-    with open(os.path.join(package_name, "sonar-project.properties"), "w") as fp:
+    with open(
+        os.path.join(package_name, "sonar-project.properties"), "w"
+    ) as fp:
         fp.write(
             "sonar.projectKey={}\n"
             "sonar.python.coverage.reportPaths=coverage.xml\n"

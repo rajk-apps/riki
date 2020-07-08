@@ -1,11 +1,23 @@
-import io
 from invoke import task
+import io
 
 from .vars import mymodule
 
 
 @task
 def new(c):
+
+    version = mymodule.__version__
+
+    c.run("python setup.py sdist")
+    c.run("twine check dist/*")
+    c.run(
+        f"twine upload dist/*{version}.tar.gz -u __token__ -p $TWINE_PASSWORD"
+    )
+
+
+@task
+def tag(c):
 
     version = mymodule.__version__
 
@@ -28,12 +40,10 @@ def new(c):
                 "docs_config/release_notes/{}.rst".format(tag_version), "w"
             ) as fp:
                 fp.write(notes)
-            c.run("git tag -a {} -m {}".format(tag_version, notes))
-            c.run("python setup.py sdist")
-            c.run("twine check dist/*")
-            c.run("twine upload dist/*{}.tar.gz".format(version))
+            c.run(f"git tag -a {tag_version} -m '{notes}'")
             with open(current_release_path, "w") as fp:
                 fp.write("")
+            c.run("git push --tags")
         else:
             print("{} version already tagged".format(tag_version))
     else:

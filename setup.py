@@ -30,6 +30,7 @@ if __name__ == "__main__":
         version=mymodule.__version__,
         description=pytom["project"]["description"],
         long_description=long_description,
+        long_description_content_type="text/markdown",
         license="MIT",
         classifiers=["License :: OSI Approved :: MIT License"],
         url=pytom["project"]["url"],

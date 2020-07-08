@@ -5,7 +5,13 @@ from .vars import package_name
 
 @task
 def clean(
-    c, docs=False, build=False, bytecode=False, test=False, sonar=False, all=False
+    c,
+    docs=False,
+    build=False,
+    bytecode=False,
+    test=False,
+    sonar=False,
+    all=False,
 ):
     patterns = []
     if docs or all:

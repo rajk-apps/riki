@@ -10,3 +10,4 @@ codecov
 toml
 flake8
 django
+isort
