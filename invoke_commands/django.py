@@ -45,4 +45,6 @@ def clean(c):
 def nb(c):
 
     c.run(f"docker exec -i {package_name}_devcont_1 pip install jupyter")
-    c.run(f"docker exec -i {package_name}_devcont_1 jupyter-notebook --ip=0.0.0.0 --allow-root")
+    c.run(
+        f"docker exec -i {package_name}_devcont_1 python /{DJANGO_PROJECT_NAME}/manage.py shell_plus --notebook"
+    )
