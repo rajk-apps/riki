@@ -15,6 +15,7 @@ services:
      tty: true
      ports:
        - "${HOST_IP}:${APP_PORT}:${APP_PORT}"
+       - 8888:8888
      volumes:
        - ./${APP_NAME}:/${DJANGO_PROJECT}/${APP_NAME}
        - ./dev_env/test_data:/test_data
