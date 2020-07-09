@@ -7,7 +7,7 @@
 <div id="wrapper">
     <div class="container">
         <div class="row">
-            <div class="col-4">
+            <div class="col-4" style="padding:15px">
               <form action="" method="get">
                 {% for field in filterform %}
                 {{ field }}
@@ -16,6 +16,13 @@
               </form>
             </div>
         </div>
+        {% if top_template %}
+            <div class="row">
+                <div class="col-12" style="padding:15px">
+                  {% include top_template %}
+                </div>
+            </div>
+        {% endif %}
         <div class="row">
             <div class="col-12">
                 {% include "riki/rendergrid.html" %}

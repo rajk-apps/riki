@@ -1,20 +1,34 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 import time
-
-from .models import *
-from .forms import *
-from django.http.response import HttpResponse, JsonResponse
-
 from typing import List
+
+from django.contrib.auth.decorators import login_required
+from django.http.response import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import WorkForm, VersionForm, CourseFilter
+from .core.course_logic import (
+    handle_course_applictaion,
+    handle_course_preapp,
+    get_preapp_formlists,
+)
+from .models import *
+
 
 @login_required
 def home(request):
 
-    my_courses = Course.objects.filter(
-        courseattendance__in=request.user.usersemester_set.all().values("courseattendance")
-    ).distinct().order_by("-year", "-semester")
-    my_projects = [c.work for c in request.user.collaboration_set.all().reverse()]
+    my_courses = (
+        Course.objects.filter(
+            courseattendance__in=request.user.usersemester_set.all().values(
+                "courseattendance"
+            )
+        )
+        .distinct()
+        .order_by("-year", "-semester")
+    )
+    my_projects = [
+        c.work for c in request.user.collaboration_set.all().reverse()
+    ]
 
     workform = WorkForm(courserestrict=my_courses, actuser=request.user)
 
@@ -38,7 +52,9 @@ def home(request):
             "my_courses": my_courses,
             "my_projects": my_projects,
             "course_dict": {"griditem_template": "riki/course-griditem.html"},
-            "project_dict": {"griditem_template": "riki/project-griditem.html"},
+            "project_dict": {
+                "griditem_template": "riki/project-griditem.html"
+            },
             "workform": workform,
         },
     )
@@ -47,81 +63,64 @@ def home(request):
 @login_required
 def courses(request):
 
+    # get semconfs with open preapp
+    # make forms
+    # process forms based on semconfs (and user)
+    # delete all preapps of user
+    # add new ones
+    # update courseattendance - app comment: PREF_NO, START YEAR
+
+    # somehow make junior courses??
+
     if request.method == "POST":
-        course_id = request.POST["course_id"]
-        tosub = request.POST["apply_button"]
-        act_course = Course.objects.get(pk=course_id)
-        act_semester = UserSemester.objects.get(
-            user=request.user.id, year=act_course.year, semester=act_course.semester
-        )
-        applicants = [
-            _c.user_semester.user.id for _c in act_course.courseattendance_set.all()
-        ]
-        if (request.user.id in applicants) and (tosub == "drop"):
-            if len(applicants) <= act_course.minapplicants:
-                # WARNING BERAGADÁS
-                pass
-            else:
-                Application(
-                    user_semester=act_semester,
-                    course=act_course,
-                    app_type="drop",
-                    time=time.strftime("%Y-%m-%d %H:%M:%S"),
-                ).save()
-                CourseAttendance.objects.get(
-                    user_semester=act_semester, course=act_course
-                ).delete()
-        elif (request.user.id not in applicants) and (tosub == "apply"):
-            Application(
-                user_semester=act_semester,
-                course=act_course,
-                app_type="apply",
-                time=time.strftime("%Y-%m-%d %H:%M:%S"),
-            ).save()
-            CourseAttendance(
-                user_semester=act_semester,
-                course=act_course,
-                app_type="2-corr",
-                app_comment=time.strftime("%Y-%m-%d %H:%M:%S"),
-            ).save()
+        if request.POST["but"] == "Submit Preapplication":
+            handle_course_preapp(request)
+        else:
+            handle_course_applictaion(request)
 
-    poss = set(SemesterConfig.objects.all().values_list("year", "institution"))
-    for_select = {}
-    for k, ind in {"year": 0, "inst": 1}.items():
-        for_select[k] = [p[ind] for p in poss]
-        for_select[k].sort()
+    all_semester_configs = SemesterConfig.objects.all()
+    if len(all_semester_configs) == 0:
+        return HttpResponse("No semesterconfig in database")
 
-    if request.method == "GET" and "year" in request.GET and "inst" in request.GET:
+    if "year" in request.GET and "inst" in request.GET:
         act_inst = request.GET["inst"]
         act_year = request.GET["year"]
     else:
-        act_inst = for_select["inst"][0]
-        act_year = for_select["year"][-1]
-    courses = Course.objects.filter(year=act_year, institution=act_inst)
+        _act_sconf = all_semester_configs[0]
+        act_inst = _act_sconf.institution
+        act_year = _act_sconf.year
+
+    course_set = Course.objects.filter(year=act_year, institution=act_inst)
+    act_sconfs = SemesterConfig.objects.filter(
+        year=act_year, institution=act_inst
+    )
+
+    open_semesters = [
+        sc.semester
+        for sc in act_sconfs
+        if (
+            (
+                sc.app_open
+                or (request.user in sc.specially_open_for_person.all())
+            )
+            and (request.user not in sc.specially_closed_for_person.all())
+        )
+    ]
+
+    preapp_open_semester_configs = [sc for sc in act_sconfs if sc.preapp_open]
 
     # TODO: very slow, quite shit, make it better!
-    sconfs = SemesterConfig.objects.filter(year=act_year, institution=act_inst)
-    open_semesters = [sc.semester for sc in sconfs
-                      if ((sc.app_open or
-                          (request.user in sc.specially_open_for_person.all())
-                           ) and
-                          (request.user not in sc.specially_closed_for_person.all())
-                          )]
-    for c in courses:
+    for c in course_set:
         if c.is_attending(request.user):
             c.am_attending = True
         if c.semester in open_semesters:
-            if request.user.usersemester_set.filter(year=c.year, semester=c.semester):
+            if request.user.usersemester_set.filter(
+                year=c.year, semester=c.semester
+            ):
                 c.is_open = True
 
-    for_select["year"] = [(y, "%d/%d" % (y, y + 1)) for y in set(for_select["year"])]
-    for_select["inst"] = [
-        (idx, Institution.objects.get(pk=idx).shortname)
-        for idx in set(for_select["inst"])
-    ]
-
     course_filter_form = CourseFilter(
-        for_select, initial={"year": act_year, "inst": act_inst}
+        all_semester_configs, initial={"year": act_year, "inst": act_inst}
     )
 
     course_typedict = {
@@ -140,12 +139,18 @@ def courses(request):
         "griditem_template": "riki/course-griditem.html",
     }
 
+    preapp_formlists = get_preapp_formlists(
+        preapp_open_semester_configs, request.user
+    )
+
     return render(
         request,
         "riki/gridpage.html",
         {
+            "top_template": "riki/course_preapp_box.html",
+            "formlists": preapp_formlists,
             "user": request.user,
-            "queryset": courses,
+            "queryset": course_set,
             "typedict": course_typedict,
             "filterform": course_filter_form,
             "navtitle": "Courses",
@@ -186,7 +191,9 @@ def profiles(request):
 def course(request, course_id):
     return courses(request)
     return render(
-        request, "riki/course.html", {"user": request.user, "course_id": course_id}
+        request,
+        "riki/course.html",
+        {"user": request.user, "course_id": course_id},
     )
 
 
@@ -194,7 +201,9 @@ def course(request, course_id):
 def profile(request, user_id):
     return profiles(request)
     return render(
-        request, "riki/profile.html", {"user": request.user, "user_id": user_id}
+        request,
+        "riki/profile.html",
+        {"user": request.user, "user_id": user_id},
     )
 
 
@@ -202,7 +211,9 @@ def profile(request, user_id):
 def attribute(request, att_id):
     return home(request)
     return render(
-        request, "riki/attribute.html", {"user": request.user, "att_id": att_id}
+        request,
+        "riki/attribute.html",
+        {"user": request.user, "att_id": att_id},
     )
 
 
@@ -255,7 +266,9 @@ def project(request, project_id):
                     filelink = "uploads/%d.%s" % (nv.id, file_ext)
                     nv.link = filelink
                     nv.save()
-                    handle_uploaded_file(request.FILES["file_upload"], filelink)
+                    handle_uploaded_file(
+                        request.FILES["file_upload"], filelink
+                    )
 
             elif request.POST["but"] == "delete":
                 nv = get_object_or_404(Version, id=request.POST["version_id"])
@@ -272,7 +285,9 @@ def project(request, project_id):
                     if "file_upload" in request.FILES:
                         filelink = "uploads/%d.%s" % (modified.id, file_ext)
                         modified.link = filelink
-                        handle_uploaded_file(request.FILES["file_upload"], filelink)
+                        handle_uploaded_file(
+                            request.FILES["file_upload"], filelink
+                        )
                     modified.save()
 
     workform = WorkForm(instance=work)
@@ -308,12 +323,13 @@ def application_data(request):
 def _proc_applist(app_list: List[Application]):
 
     return [
-        {"user": a.user_semester.user.email,
-         "year": a.user_semester.year,
-         "semester": a.user_semester.semester,
-         "course_name": a.course.name,
-         "action": a.app_type,
-         "time": a.time
-         }
+        {
+            "user": a.user_semester.user.email,
+            "year": a.user_semester.year,
+            "semester": a.user_semester.semester,
+            "course_name": a.course.name,
+            "action": a.app_type,
+            "time": a.time,
+        }
         for a in app_list
     ]

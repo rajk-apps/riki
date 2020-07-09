@@ -1,14 +1,17 @@
-from .models import *
 from django import forms
+
+from .models import Work, Version, Course, Preapplication
 
 
 class WorkForm(forms.ModelForm):
-    def __init__(self, *args, actuser=None, courserestrict=Course.objects, **kwargs):
+    def __init__(
+        self, *args, actuser=None, courserestrict=Course.objects, **kwargs
+    ):
         super(WorkForm, self).__init__(*args, **kwargs)
         self.fields["courses"].queryset = courserestrict
         self.fields["courses"].required = False
         self.fields["attribute"].required = False
-        if type(actuser) != type(None):
+        if actuser is not None:
             self.fields["collaborators"].initial = [actuser]
 
     class Meta:
@@ -27,7 +30,6 @@ class WorkForm(forms.ModelForm):
                 attrs={"class": "chosen-select", "multiple tabindex": "4",}
             ),
         }
-        # fields = ['title', 'abstract', 'collaborators', 'attributes']
 
 
 class VersionForm(forms.ModelForm):
@@ -49,7 +51,46 @@ class CourseFilter(forms.Form):
     inst = forms.ChoiceField(label="Institution")
     year = forms.ChoiceField(label="Academic year")
 
-    def __init__(self, for_select, **kwargs):
+    def __init__(self, semester_configs, **kwargs):
         super(CourseFilter, self).__init__(**kwargs)
-        for kw in ["year", "inst"]:
-            self.fields[kw] = forms.ChoiceField(choices=for_select[kw],)
+        year_choices = list(
+            set(
+                [
+                    (sc.year, "%d/%d" % (sc.year, sc.year + 1))
+                    for sc in semester_configs
+                ]
+            )
+        )
+        inst_choices = list(
+            set(
+                [
+                    (sc.institution.pk, sc.institution.shortname)
+                    for sc in semester_configs
+                ]
+            )
+        )
+        self.fields["year"] = forms.ChoiceField(choices=year_choices)
+        self.fields["inst"] = forms.ChoiceField(choices=inst_choices)
+
+
+class PreappForm(forms.ModelForm):
+    def __init__(
+        self,
+        *args,
+        courserestrict=Course.objects,
+        initial_course=None,
+        **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.fields["course"].queryset = courserestrict
+        self.fields["course"].required = False
+        if initial_course is not None:
+            self.fields["course"].initial = initial_course
+
+    class Meta:
+        model = Preapplication
+        exclude = []
+        fields = ["course"]
+        widgets = {
+            "preference": forms.HiddenInput(),
+        }

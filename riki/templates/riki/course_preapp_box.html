@@ -1,0 +1,23 @@
+ <form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
+     <h4>Preapplication</h4>
+     <div class="row" style="padding:20px">
+        {% for formlist in formlists %}
+        <div class="col-12" style="padding:15px">
+            <h4>{{ formlist.name }}</h4>
+            {% for form in formlist %}
+            <div class="row">
+                <div class="col-3">
+                    <b>{{ form.pref_name }}</b>
+                </div>
+                <div class="col-9">
+                    {% for field in form %}
+                    {{ field }}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <input type="submit" value="Submit Preapplication" name="but">
+    </div>
+ </form>
