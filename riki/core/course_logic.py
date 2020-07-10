@@ -1,5 +1,8 @@
+import datetime
 import time
 import re
+
+from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import (
     Course,
@@ -7,7 +10,7 @@ from ..models import (
     Application,
     CourseAttendance,
     Preapplication,
-    Path
+    Path,
 )
 from ..forms import PreappForm
 
@@ -67,19 +70,32 @@ def handle_course_preapp(request):
                 pref_no = int(res[0][0])
                 act_semester = UserSemester.objects.get(pk=us_id)
                 preapp = Preapplication(
-                    user_semester=act_semester, course_id=course, preference=pref_no
+                    user_semester=act_semester,
+                    course_id=course,
+                    preference=pref_no,
                 )
                 preapps.append(preapp)
     Preapplication.objects.filter(user_semester__in=uset).delete()
-    CourseAttendance.objects.filter(
-        user_semester__in=uset,
-    ).delete()
+    CourseAttendance.objects.filter(user_semester__in=uset,).delete()
     for preapp in preapps:
         preapp.save()
         act_course = Course.objects.get(pk=preapp.course_id)
-        user_path = Path.objects.filter(user=request.user.id, institution__in=act_course.institution.all())
+        user_path = Path.objects.filter(
+            user=request.user.id, institution__in=act_course.institution.all()
+        )
         if len(user_path):
             secondary_num = user_path[0].yearfrom
+            if act_course.juniority:
+                secondary_num = (
+                    int(
+                        (
+                            datetime.date.today()
+                            - datetime.date(user_path[0].yearfrom, 7, 1)
+                        ).days
+                        / 365
+                    )
+                    + 1
+                )
             app_comment = f"{preapp.preference} - {secondary_num}"
         else:
             app_comment = f"XENO - {preapp.preference}"
@@ -94,9 +110,15 @@ def handle_course_preapp(request):
 def get_preapp_formlists(preapp_open_semester_configs, user):
     preapp_formlists = []
     for sc in preapp_open_semester_configs:
-        act_semester = UserSemester.objects.get(
-            user=user.id, year=sc.year, semester=sc.semester,
-        )
+        try:
+            act_semester = UserSemester.objects.get(
+                user=user.id, year=sc.year, semester=sc.semester,
+            )
+        except ObjectDoesNotExist:
+            act_semester = UserSemester(
+                user=user, year=sc.year, semester=sc.semester
+            )
+            act_semester.save()
         user_preapps = Preapplication.objects.filter(
             user_semester=act_semester
         )

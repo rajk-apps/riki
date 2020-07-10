@@ -49,7 +49,7 @@ class Course(models.Model):
     semester = models.PositiveSmallIntegerField()
     minapplicants = models.PositiveSmallIntegerField()
     maxapplicants = models.PositiveSmallIntegerField()
-    #  juniority = models.BooleanField(default=False)
+    juniority = models.BooleanField(default=False)
 
     syllabus = models.CharField(max_length=250)
     name = models.CharField(max_length=100)

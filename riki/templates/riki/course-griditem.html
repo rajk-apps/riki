@@ -11,7 +11,7 @@
                     </div>
                     <div class="col-2">{{ element.minapplicants }} - {{ element.maxapplicants }}</div>
                     <div class="col-2"><a href="{{ element.syllabus }}">syllabus</a></div>
-                    <div class="col-2">{{ element.comment }}</div>
+                    <div class="col-2">{% if element.comment %} {{ element.comment }}{% endif %}</div>
                     <div class="col-2">
                         {% if element.semesterconfig_set.exists or element.is_open %}
                         <form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
