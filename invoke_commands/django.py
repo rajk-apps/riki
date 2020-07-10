@@ -21,7 +21,7 @@ def setup_dev(c):
 def clean(c):
 
     cleaning_commands = [
-        "docker exec -i {}_devcont_1 python /{}/manage.py dumpdata {}".format(
+        "docker exec -i {}_devcont_1 python /{}/manage.py dumpdata {} auth.user".format(
             package_name, DJANGO_PROJECT_NAME, package_name
         )
         + " --indent=2 > dev_env/test_data/test_data_dump.json",
