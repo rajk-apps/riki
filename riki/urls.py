@@ -14,4 +14,5 @@ urlpatterns = [
     path("project/<int:project_id>", views.project, name="project"),
     path("uploads/<int:version_id>", views.version, name="version"),
     path("application_data", views.application_data, name="application_data"),
+    path("course_attendance_data", views.ca_data, name="ca_data"),
 ]
