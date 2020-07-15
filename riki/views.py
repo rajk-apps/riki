@@ -333,3 +333,25 @@ def _proc_applist(app_list: List[Application]):
         }
         for a in app_list
     ]
+
+def ca_data(request):
+    ca_list = CourseAttendance.objects.all()
+    ca_rec_list = _proc_calist(ca_list)
+    return JsonResponse(ca_rec_list, safe=False)
+
+
+def _proc_calist(app_list: List[CourseAttendance]):
+
+    return [
+        {
+            "user": a.user_semester.user.email,
+            "fname": a.user_semester.user.first_name,
+            "lname": a.user_semester.user.last_name,
+            "year": a.user_semester.year,
+            "semester": a.user_semester.semester,
+            "course_name": a.course.name,
+            "action": a.app_type,
+            "comment": a.app_comment,
+        }
+        for a in app_list
+    ]
