@@ -5,12 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import WorkForm, VersionForm, CourseFilter
 from .core.course_logic import (
-    handle_course_applictaion,
-    handle_course_preapp,
     get_preapp_formlists,
+    handle_course_applictaion,
+    handle_course_preapp
 )
+from .forms import CourseFilter, VersionForm, WorkForm
 from .models import *
 
 
@@ -73,7 +73,7 @@ def courses(request):
     # somehow make junior courses??
 
     if request.method == "POST":
-        if request.POST["but"] == "Submit Preapplication":
+        if request.POST.get("but") == "Submit Preapplication":
             handle_course_preapp(request)
         else:
             handle_course_applictaion(request)
@@ -333,6 +333,7 @@ def _proc_applist(app_list: List[Application]):
         }
         for a in app_list
     ]
+
 
 def ca_data(request):
     ca_list = CourseAttendance.objects.all()

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import *
 
+
 # TODO: clean this up
 def preapps_to_att(modeladmin, request, queryset):
     for semconf in queryset:

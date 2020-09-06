@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Work, Version, Course, Preapplication
+from .models import Course, Preapplication, Version, Work
 
 
 class WorkForm(forms.ModelForm):
@@ -53,13 +53,17 @@ class CourseFilter(forms.Form):
 
     def __init__(self, semester_configs, **kwargs):
         super(CourseFilter, self).__init__(**kwargs)
-        year_choices = list(
-            set(
-                [
-                    (sc.year, "%d/%d" % (sc.year, sc.year + 1))
-                    for sc in semester_configs
-                ]
-            )
+        year_choices = sorted(
+            list(
+                set(
+                    [
+                        (sc.year, "%d/%d" % (sc.year, sc.year + 1))
+                        for sc in semester_configs
+                    ]
+                )
+            ),
+            key=lambda t: t[0],
+            reverse=True,
         )
         inst_choices = list(
             set(

@@ -1,18 +1,18 @@
 import datetime
-import time
 import re
+import time
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import (
-    Course,
-    UserSemester,
-    Application,
-    CourseAttendance,
-    Preapplication,
-    Path,
-)
 from ..forms import PreappForm
+from ..models import (
+    Application,
+    Course,
+    CourseAttendance,
+    Path,
+    Preapplication,
+    UserSemester
+)
 
 
 def handle_course_applictaion(request):
