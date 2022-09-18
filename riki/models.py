@@ -74,9 +74,7 @@ class Course(models.Model):
         return [
             {
                 "user": u.user_semester.user,
-                "plus_info": " - ".join(
-                    [u.get_app_type_display(), u.app_comment]
-                ),
+                "plus_info": f"{u.get_app_type_display()} - {u.app_comment}",
                 "result": u.result,
             }
             for u in self.courseattendance_set.order_by(
